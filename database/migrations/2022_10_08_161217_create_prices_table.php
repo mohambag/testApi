@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('product_id')->nullable();
             $table->string('orginal')->nullable();
             $table->string('final')->nullable();
-            $table->tinyInteger('discount_percentage')->default(null);
+            $table->tinyInteger('discount_percentage')->nullable();
             $table->string('currency')->default('EUR');
             $table->timestamps();
             $table->softDeletes();

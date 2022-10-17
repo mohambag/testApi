@@ -19,8 +19,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('products')->group(function () {
-    Route::get('/',[\App\Http\Controllers\ProductController::class,'getProducts'])->name('api.products');
-    Route::get('/list/discounts',[\App\Http\Controllers\ProductController::class,'getListOfDiscountProducts'])->name('api.products.list.discount');
-//    Route::post('/list/discounts',[\App\Http\Controllers\ProductController::class,'getListOfDiscountProducts'])->name('api.products.list.discount');
+    Route::get('/', [\App\Http\Controllers\ProductController::class, 'getListOfProducts'])->name('api.products.list');
     Route::post('/store', [\App\Http\Controllers\ProductController::class, 'store'])->name('api.product.store');
 });

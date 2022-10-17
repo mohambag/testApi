@@ -41,7 +41,7 @@ class Price
         $price->orginal = $priceData;
         $price->product_id = $productId;
         $price->final = $priceData;
-        $price->discount_percentage = 0;
+        $price->discount_percentage = null;
         try {
             $price->save();
         } catch (Exception $exception) {

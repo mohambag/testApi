@@ -14,32 +14,7 @@ use Symfony\Component\Console\Input\Input;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \App\Http\Requests\StoreProductRequest $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(StoreProductRequest $request)
     {
         $product = new Product();
@@ -64,44 +39,28 @@ class ProductController extends Controller
     }
 
 
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\Models\Product $products
-     * @return \Illuminate\Http\Response
-     */
-
-    public function getProducts()
+    public function getListOfProducts(\Illuminate\Http\Request $request)
     {
-        $products = Product::withoutTrashed()
-            ->orderByDesc('id')
-            ->with(['price', 'categories'])
-            ->paginate('20');
-        return $products;
-    }
 
-    public function getListOfDiscountProducts(\Illuminate\Http\Request $request)
-    {
-//      return $request->input('priceMin');
-        if ($request->input('priceMax') ? $maxPrice = $request->input('priceMax') : $maxPrice = '') ;
-        if ($request->input('priceMin') ? $minPrice = $request->input('priceMin') : $minPrice = '') ;
-        if ($request->input('discount') ? $discount = $request->input('discount') : $discount = '') ;
-        if ($request->input('categories') ? $categories = $request->input('categories') : $categories = '') ;
+        if ($request->input('priceMax') ? $maxPrice = $request->input('priceMax') : $maxPrice = null) ;
+        if ($request->input('priceMin') ? $minPrice = $request->input('priceMin') : $minPrice = null) ;
+        if ($request->input('discount') == true ? $discount = $request->input('discount') : $discount = null) ;
+        if ($request->input('categories') ? $categories = $request->input('categories') : $categories = null) ;
 
         $productsQuery = Product::query()
             ->orderByDesc('id');
 
 
-        if (!is_null($discount)) {//products list with discount
+        if (!is_null($discount)) {//******* products list with discount
             $productsQuery->WhereHas(
                 'price', fn($query) => $query
                 ->whereNot('discount_percentage', null)
             );
-        } else {//products list without discount
+        } else {//********* products list without discount
 
             $productsQuery->WhereHas(
                 'price', fn($query) => $query
-                ->where('discount_percentage', 0)
+                ->where('discount_percentage', null)
             );
 
             //*******$maxPrice filter
@@ -120,10 +79,10 @@ class ProductController extends Controller
 
         }
 
-//        $categories filter
+//   **************     $categories filter
         if (!is_null($categories)) {
             $productsQuery->WhereHas('categories', function ($query) use ($categories) {
-                $query->whereIn('id', $categories);
+                $query->whereIn('category_id', $categories);
             });
         }
 
@@ -135,48 +94,4 @@ class ProductController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\Models\Product $product
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Product $product)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param \App\Models\Product $product
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Product $product)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \App\Http\Requests\UpdateProductRequest $request
-     * @param \App\Models\Product $product
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateProductRequest $request, Product $product)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Models\Product $product
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Product $product)
-    {
-        //
-    }
 }
