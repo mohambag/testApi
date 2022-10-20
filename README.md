@@ -7,7 +7,7 @@ Product creation:
 Filter section:
 To get the list of discounted products, set the discount parameter = true, otherwise non-discounted products will be displayed
 To apply the filter in the price section, you can specify the maximum and minimum value for the filter.
-If there is a discount in the APA request sent (with correct or false values), the list with or without discount will be received in the mentioned query, and if there is no discount field in the APA request sent, all the products Both with discount and without discount are displayed.
+If there is a discount in the API request sent (with correct or false values), the list with or without discount will be received in the mentioned query, and if there is no discount field in the API request sent, all the products Both with discount and without discount are displayed.
 
 API
 Postman's file is attached
