@@ -24,13 +24,15 @@ class ProductController extends Controller
 
         try {
             $product->save();
-            $product->categories()->attach($request->categories);
+            $product->categories()->attach($request->categories);//** save categories with many to many relataionship */
         } catch (Exception $exception) {
             return redirect()->back()->with($exception);
         }
+//        ********** Discount
         $disount = new SubClass\Discount();
         $discount = $disount->discountChecker($request->sku, $request->categories);
 
+//        ********** Price
         $price = new Price();
         $price->finalPrice($request->price, $discount, $product->id);
 
@@ -44,39 +46,38 @@ class ProductController extends Controller
 
         if ($request->input('priceMax') ? $maxPrice = $request->input('priceMax') : $maxPrice = null) ;
         if ($request->input('priceMin') ? $minPrice = $request->input('priceMin') : $minPrice = null) ;
-        if ($request->input('discount') == true ? $discount = $request->input('discount') : $discount = null) ;
+        if ($request->input('discount') ? $discount = $request->input('discount') : $discount = null) ;
         if ($request->input('categories') ? $categories = $request->input('categories') : $categories = null) ;
 
         $productsQuery = Product::query()
             ->orderByDesc('id');
 
+        if (!is_null($discount)) {//******* discount exist
+            if ($discount==true) {//******* products list with discount => discount == true
 
-        if (!is_null($discount)) {//******* products list with discount
-            $productsQuery->WhereHas(
-                'price', fn($query) => $query
-                ->whereNot('discount_percentage', null)
-            );
-        } else {//********* products list without discount
-
-            $productsQuery->WhereHas(
-                'price', fn($query) => $query
-                ->where('discount_percentage', null)
-            );
-
-            //*******$maxPrice filter
-            if (!is_null($maxPrice)) {
-                $productsQuery->WhereHas('price', function ($query) use ($maxPrice) {
-                    $query->where('orginal', '<', $maxPrice);
-                });
+                $productsQuery->WhereHas(
+                    'price', fn($query) => $query
+                    ->whereNot('discount_percentage', null)
+                );
+            } else {//********* products list without discount => discount == false
+                $productsQuery->WhereHas(
+                    'price', fn($query) => $query
+                    ->where('discount_percentage', null)
+                );
             }
+        }
+        //*******$maxPrice filter
+        if (!is_null($maxPrice)) {
+            $productsQuery->WhereHas('price', function ($query) use ($maxPrice) {
+                $query->where('orginal', '<', $maxPrice);
+            });
+        }
 
-            //*******$minPrice filter
-            if (!is_null($minPrice)) {
-                $productsQuery->WhereHas('price', function ($query) use ($minPrice) {
-                    $query->where('orginal', '>', $minPrice);
-                });
-            }
-
+        //*******$minPrice filter
+        if (!is_null($minPrice)) {
+            $productsQuery->WhereHas('price', function ($query) use ($minPrice) {
+                $query->where('orginal', '>', $minPrice);
+            });
         }
 
 //   **************     $categories filter
